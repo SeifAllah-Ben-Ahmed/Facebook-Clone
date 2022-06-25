@@ -8,7 +8,7 @@
 .input_wrap input {
   outline: none;
   border: 1px solid var(--bg-third);
-  background-color: var(--bg-primary);
+  background: var(--bg-primary);
   width: 100%;
   height: 50px;
   font-size: 17px;
@@ -20,37 +20,50 @@
 .input_wrap input:focus {
   border-color: var(--blue-color);
 }
-.input_wrap input.input_error_border {
-  border-color: var(--red-color);
+.input_error_border {
+  border-color: #b94a48 !important;
 }
 .input_wrap i {
   position: absolute;
   right: 5px;
-  top: 25px;
-  transform: translateY(-50%);
+  top: 15px;
+  transform: scale(0.8);
 }
 .input_error {
   position: relative;
   padding: 15px 10px;
-  background-color: var(--red-color);
-  color: #fff;
+  background: #b94a48;
   width: 100%;
+  color: #fff;
   font-size: 13px;
-  margin-bottom: 15px;
   border-radius: 5px;
+  margin-bottom: 15px;
 }
-.input_error::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  bottom: 0;
-  transform: translateY(100%);
-  border-top: 10px solid var(--red-color);
+.error_arrow_top {
+  border-top: 10px solid #b94a48;
   border-right: 10px solid transparent;
   border-left: 10px solid transparent;
+  position: absolute;
+  bottom: -9px;
 }
-.input_wrap ~ .input_error::before {
-  top: 0;
-  bottom: auto;
-  transform: translateY(-100%) rotate(180deg);
+.error_arrow_bottom {
+  border-bottom: 10px solid #b94a48;
+  border-right: 10px solid transparent;
+  border-left: 10px solid transparent;
+  position: absolute;
+  top: -9px;
+}
+.input_error_desktop {
+  position: absolute;
+  width: 300px;
+  left: -19.5rem;
+  top: -3px;
+}
+.error_arrow_left {
+  border-left: 10px solid #b94a48;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  position: absolute;
+  right: -10px;
+  top: 13px;
 }
