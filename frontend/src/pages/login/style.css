@@ -222,13 +222,14 @@ button.open_signup {
   top: 70px;
 }
 .input_error_select_large {
-  left: -97%;
-  top: 15px !important;
+  left: -82%;
+  top: 20px !important;
 }
+
 /*----dob and gender errors-----*/
 /*----error and success styles -------*/
 .error_text {
-  color: #b94a48;
+  color: var(--red-color);
 }
 .success_text {
   color: var(--green-color);

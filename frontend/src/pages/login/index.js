@@ -5,7 +5,7 @@ import RegisterForm from "../../components/login/RegisterForm";
 import "./style.css";
 
 export default function Login() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   return (
     <div className="login">
       <LoginForm setVisible={setVisible} />

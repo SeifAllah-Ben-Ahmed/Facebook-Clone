@@ -42,11 +42,15 @@ export default function DateOfBirthSelect({
       {dateError && (
         <div
           className={
-            !view3 ? "input_error" : "input_error input_error_select_large"
+            !view3 ? "input_error" : "input_error input_error_select_large "
           }
+          style={{
+            transform: "translateY(2px)",
+            left: `${view3 ? "107%" : ""}`,
+          }}
         >
           <div
-            className={!view3 ? "error_arrow_bottom" : "error_arrow_left"}
+            className={!view3 ? "error_arrow_bottom" : "error_arrow_right"}
           ></div>
           {dateError}
         </div>

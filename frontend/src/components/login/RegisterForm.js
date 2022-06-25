@@ -1,13 +1,21 @@
-import { Form, Formik } from "formik";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import DotLoader from "react-spinners/DotLoader";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { Form, Formik } from "formik";
 import RegisterInput from "../inputs/registerInput";
 import * as Yup from "yup";
 import DateOfBirthSelect from "./DateOfBirthSelect";
 import GenderSelect from "./GenderSelect";
+
 export default function RegisterForm({ setVisible }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userInfos = {
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     bYear: new Date().getFullYear(),
@@ -15,17 +23,35 @@ export default function RegisterForm({ setVisible }) {
     bDay: new Date().getDate(),
     gender: "",
   };
+
   const [user, setUser] = useState(userInfos);
-  const {
-    first_name,
-    last_name,
-    email,
-    password,
-    bYear,
-    bMonth,
-    bDay,
-    gender,
-  } = user;
+  const { firstName, lastName, email, password, bYear, bMonth, bDay, gender } =
+    user;
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const registerSubmit = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/register`,
+        { firstName, lastName, email, password, bYear, bMonth, bDay, gender }
+      );
+      setLoading(false);
+      setSuccess(data.message);
+      setError("");
+      setTimeout(() => {
+        const { user, token } = data;
+        dispatch({ type: "LOGIN", payload: { ...user, token } });
+        Cookies.set("user", JSON.stringify({ ...user, token }));
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      setLoading(false);
+      setSuccess("");
+      setError(error.response.data.message);
+    }
+  };
   const yearTemp = new Date().getFullYear();
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
@@ -38,12 +64,12 @@ export default function RegisterForm({ setVisible }) {
   };
   const days = Array.from(new Array(getDays()), (val, index) => 1 + index);
   const registerValidation = Yup.object({
-    first_name: Yup.string()
+    firstName: Yup.string()
       .required("What's your First name ?")
       .min(2, "Fisrt name must be between 2 and 16 characters.")
       .max(16, "Fisrt name must be between 2 and 16 characters.")
       .matches(/^[aA-zZ]+$/, "Numbers and special characters are not allowed."),
-    last_name: Yup.string()
+    lastName: Yup.string()
       .required("What's your Last name ?")
       .min(2, "Last name must be between 2 and 16 characters.")
       .max(16, "Last name must be between 2 and 16 characters.")
@@ -64,7 +90,7 @@ export default function RegisterForm({ setVisible }) {
 
   const [genderError, setGenderError] = useState("");
   return (
-    <div className="blur">
+    <div className="blur" onClick={() => setVisible(false)}>
       <div className="register">
         <div className="register_header">
           <i className="exit_icon" onClick={() => setVisible(false)}></i>
@@ -74,8 +100,8 @@ export default function RegisterForm({ setVisible }) {
         <Formik
           enableReinitialize
           initialValues={{
-            first_name,
-            last_name,
+            firstName,
+            lastName,
             email,
             password,
             bYear,
@@ -84,11 +110,10 @@ export default function RegisterForm({ setVisible }) {
             gender,
           }}
           validationSchema={registerValidation}
-          onSubmit={() => {
+          onSubmit={async () => {
             let current_date = new Date();
             let picked_date = new Date(bYear, bMonth - 1, bDay);
             let atleast14 = new Date(1970 + 14, 0, 1);
-
             let noMoreThan70 = new Date(1970 + 70, 0, 1);
             if (current_date - picked_date < atleast14) {
               setDateError(
@@ -106,6 +131,7 @@ export default function RegisterForm({ setVisible }) {
             } else {
               setDateError("");
               setGenderError("");
+              await registerSubmit();
             }
           }}
         >
@@ -115,13 +141,13 @@ export default function RegisterForm({ setVisible }) {
                 <RegisterInput
                   type="text"
                   placeholder="First name"
-                  name="first_name"
+                  name="firstName"
                   onChange={handleRegisterChange}
                 />
                 <RegisterInput
                   type="text"
-                  placeholder="Surname"
-                  name="last_name"
+                  placeholder="Last name"
+                  name="lastName"
                   onChange={handleRegisterChange}
                 />
               </div>
@@ -175,9 +201,13 @@ export default function RegisterForm({ setVisible }) {
               </div>
               <div className="reg_btn_wrapper">
                 <button type="submit" className="blue_btn open_signup">
-                  Sign Up
+                  Sign Up{" "}
                 </button>
               </div>
+
+              <DotLoader color="#1876f2" loading={loading} size={30} />
+              {error && <div className="error_text">{error}</div>}
+              {success && <div className="success_text">{success}</div>}
             </Form>
           )}
         </Formik>

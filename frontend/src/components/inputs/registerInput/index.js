@@ -9,15 +9,15 @@ export default function RegisterInput({ placeholder, bottom, ...props }) {
   const view3 = useMediaQuery({
     query: "(min-width: 1170px)",
   });
-  const test1 = view3 && field.name === "first_name";
-  const test2 = view3 && field.name === "last_name";
+  const test1 = view3 && field.name === "firstName";
+  const test2 = view3 && field.name === "lastName";
   return (
     <div className="input_wrap register_input_wrap">
       <input
         className={meta.touched && meta.error ? "input_error_border" : ""}
         style={{
           width: `${
-            view1 && (field.name === "first_name" || field.name === "last_name")
+            view1 && (field.name === "firstName" || field.name === "lastName")
               ? "100%"
               : view1 && (field.name === "email" || field.name === "password")
               ? "370px"
@@ -42,9 +42,9 @@ export default function RegisterInput({ placeholder, bottom, ...props }) {
           {meta.touched && meta.error && (
             <div
               className={
-                view3 && field.name !== "last_name"
+                view3 && field.name !== "lastName"
                   ? "error_arrow_left"
-                  : view3 && field.name === "last_name"
+                  : view3 && field.name === "lastName"
                   ? "error_arrow_right"
                   : !view3 && "error_arrow_bottom"
               }

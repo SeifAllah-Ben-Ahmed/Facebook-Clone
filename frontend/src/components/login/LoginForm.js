@@ -1,15 +1,41 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import DotLoader from "react-spinners/DotLoader";
+import axios from "axios";
+import Cookies from "js-cookie";
 import { Formik, Form } from "formik";
-import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import LoginInput from "../../components/inputs/loginInput";
-import { useState } from "react";
 const loginInfos = {
   email: "",
   password: "",
 };
 export default function LoginForm({ setVisible }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(loginInfos);
   const { email, password } = login;
+  const loginSubmit = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/login`,
+        { email, password }
+      );
+      setLoading(false);
+      setError("");
+      const { user, token } = data;
+      dispatch({ type: "LOGIN", payload: { ...user, token } });
+      Cookies.set("user", JSON.stringify({ ...user, token }));
+      navigate("/");
+    } catch (error) {
+      setLoading(false);
+      setError(error.response.data.message);
+    }
+  };
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
     setLogin({ ...login, [name]: value });
@@ -38,26 +64,32 @@ export default function LoginForm({ setVisible }) {
               password,
             }}
             validationSchema={loginValidation}
+            onSubmit={() => {
+              loginSubmit();
+            }}
           >
             {(formik) => (
               <Form>
-                {console.log(formik.errors)}
                 <LoginInput
                   type="text"
                   name="email"
                   placeholder="Email address or phone number"
                   onChange={handleLoginChange}
+                  autoComplete="username"
                 />
                 <LoginInput
                   type="password"
                   name="password"
                   placeholder="Password"
                   onChange={handleLoginChange}
+                  autoComplete="current-password"
                   bottom
                 />
                 <button type="submit" className="blue_btn">
                   Log In
                 </button>
+                <DotLoader color="#1876f2" loading={loading} size={30} />
+                {error && <div className="error_text">{error}</div>}
               </Form>
             )}
           </Formik>

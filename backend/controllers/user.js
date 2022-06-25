@@ -37,6 +37,7 @@ exports.register = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
+    message: 'Register Success! Please activate your email to start.',
     user: {
       id: user._id,
       username: user.username,
