@@ -90,7 +90,7 @@ export default function RegisterForm({ setVisible }) {
 
   const [genderError, setGenderError] = useState("");
   return (
-    <div className="blur" onClick={() => setVisible(false)}>
+    <div className="blur">
       <div className="register">
         <div className="register_header">
           <i className="exit_icon" onClick={() => setVisible(false)}></i>
