@@ -28,7 +28,7 @@ exports.register = catchAsync(async (req, res, next) => {
     bYear,
   });
 
-  const verificationToken = generateToken(user._id);
+  const verificationToken = generateToken(user._id, '30m');
   const url = `${process.env.BASE_URL}/activate/${verificationToken}`;
 
   sendVerificationEmail(user.email, user.firstName, url);
@@ -53,8 +53,13 @@ exports.activateAccount = catchAsync(async (req, res, next) => {
   const { token } = req.body;
   const { id } = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
+  const validUser = req.user.id;
   const user = await User.findById(id);
-
+  if (validUser !== id) {
+    return next(
+      new AppError('You are not authorized to complet this operation!', 400)
+    );
+  }
   if (user.verified) {
     return next(new AppError('This account is already activated', 400));
   }
@@ -96,5 +101,22 @@ exports.login = catchAsync(async (req, res, next) => {
       picture: user.picture,
     },
     token,
+  });
+});
+exports.sendVerification = catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const user = await User.findById(id);
+  if (user.verified) {
+    return next(new AppError('This account is already activated', 400));
+  }
+
+  const verificationToken = generateToken(user._id, '30m');
+  const url = `${process.env.BASE_URL}/activate/${verificationToken}`;
+
+  sendVerificationEmail(user.email, user.firstName, url);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Email verification link has been send via email',
   });
 });
