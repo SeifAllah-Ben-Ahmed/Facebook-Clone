@@ -1,4 +1,4 @@
-import { useField, ErrorMessage } from "formik";
+import { useField, ErrorMessage, Field } from "formik";
 import { useMediaQuery } from "react-responsive";
 
 import "./style.css";
@@ -7,12 +7,20 @@ export default function LoginInput({ placeholder, bottom, ...props }) {
   const desktopView = useMediaQuery({
     query: "(min-width: 850px)",
   });
+  const veiw1050 = useMediaQuery({
+    query: "(max-width: 1050px)",
+  });
+
   return (
     <div className="input_wrap">
       {meta.touched && meta.error && !bottom && (
         <div
           className={
-            desktopView ? "input_error input_error_desktop" : "input_error"
+            desktopView && veiw1050 && field.name === "password"
+              ? "input_error input_error_desktop err_res_password"
+              : desktopView
+              ? "input_error input_error_desktop"
+              : "input_error"
           }
           style={{ transform: "translateY(3px)" }}
         >
@@ -35,7 +43,11 @@ export default function LoginInput({ placeholder, bottom, ...props }) {
       {meta.touched && meta.error && bottom && (
         <div
           className={
-            desktopView ? "input_error input_error_desktop" : "input_error"
+            desktopView && veiw1050 && field.name === "confirmPassword"
+              ? "input_error conf_password_error"
+              : desktopView
+              ? "input_error input_error_desktop"
+              : "input_error"
           }
           style={{ transform: "translateY(2px)" }}
         >
