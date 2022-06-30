@@ -120,3 +120,14 @@ exports.sendVerification = catchAsync(async (req, res, next) => {
     message: 'Email verification link has been send via email',
   });
 });
+exports.findUser = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email }).select('-password');
+  if (!user) {
+    return next(new AppError('Account does not exist.', 400));
+  }
+  res.status(200).json({
+    email: user.email,
+    picture: user.picture,
+  });
+});
