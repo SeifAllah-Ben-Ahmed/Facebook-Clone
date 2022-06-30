@@ -1,4 +1,4 @@
-import { useField, ErrorMessage, Field } from "formik";
+import { useField, ErrorMessage } from "formik";
 import { useMediaQuery } from "react-responsive";
 
 import "./style.css";
