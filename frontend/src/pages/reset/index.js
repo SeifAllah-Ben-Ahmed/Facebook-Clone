@@ -22,7 +22,7 @@ export default function Reset() {
   const [loading, setLoading] = useState(false);
 
   const [visible, setVisible] = useState(0);
-  console.log(userInfo);
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
     Cookies.remove("user");
@@ -61,13 +61,26 @@ export default function Reset() {
             loading={loading}
           />
         )}
-        {visible === 1 && <SendEmail user={userInfo} />}
+        {visible === 1 && (
+          <SendEmail
+            user={userInfo}
+            setVisible={setVisible}
+            loading={loading}
+            setLoading={setLoading}
+            setError={setError}
+            error={error}
+          />
+        )}
         {visible === 2 && (
           <CodeVerification
             code={code}
             setCode={setCode}
             error={error}
             setError={setError}
+            setVisible={setVisible}
+            loading={loading}
+            setLoading={setLoading}
+            user={userInfo}
           />
         )}
         {visible === 3 && (
@@ -78,6 +91,9 @@ export default function Reset() {
             confirmPassword={confirmPassword}
             setConfirmPassword={setConfirmPassword}
             setError={setError}
+            loading={loading}
+            setLoading={setLoading}
+            user={userInfo}
           />
         )}
       </div>

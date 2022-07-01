@@ -5,7 +5,12 @@ const catchAsync = require('../utils/catchAsync');
 const validation = require('../utils/validation');
 const AppError = require('../utils/AppError');
 const { generateToken } = require('../utils/token');
-const { sendVerificationEmail } = require('../utils/mailer');
+const {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+} = require('../utils/mailer');
+const Code = require('../models/code');
+const generateCode = require('../utils/generateCode');
 
 exports.register = catchAsync(async (req, res, next) => {
   const { firstName, lastName, email, password, gender, bMonth, bDay, bYear } =
@@ -130,4 +135,42 @@ exports.findUser = catchAsync(async (req, res, next) => {
     email: user.email,
     picture: user.picture,
   });
+});
+
+exports.sendResetPasswordCode = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email }).select('-password');
+  await Code.findOneAndRemove({ user: user._id });
+  const code = generateCode(5);
+  await Code.create({
+    code,
+    user: user._id,
+  });
+  sendResetPasswordEmail(email, user.firstName, code);
+  res.status(200).json({
+    message: 'Reset password code has been send to your email',
+    email: user.email,
+    picture: user.picture,
+  });
+});
+exports.validateResetCode = catchAsync(async (req, res, next) => {
+  const { email, code } = req.body;
+  const user = await User.findOne({ email }).select('-password');
+  const codeDB = await Code.findOne({ user: user._id });
+
+  if (code !== codeDB.code) {
+    return next(new AppError('Verification code is wrong.', 400));
+  }
+
+  res.status(204).json({ status: 'success' });
+});
+exports.changePassword = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  user.password = password;
+  user.save();
+
+  res
+    .status(200)
+    .json({ status: 'success', message: 'Password been updated successfully' });
 });

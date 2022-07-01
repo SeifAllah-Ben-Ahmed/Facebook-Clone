@@ -9,5 +9,8 @@ router.post('/activate', authUser, userControllers.activateAccount);
 router.post('/login', userControllers.login);
 router.post('/sendVerification', authUser, userControllers.sendVerification);
 router.post('/findUser', userControllers.findUser);
+router.post('/sendResetPasswordCode', userControllers.sendResetPasswordCode);
+router.post('/validateResetCode', userControllers.validateResetCode);
+router.post('/changePassword', userControllers.changePassword);
 
 module.exports = router;
