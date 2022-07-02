@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import "./style.css";
-import EmojiPicker from "./EmojiPicker";
+import EmojiPickerBackground from "./EmojiPickerBackground";
 import AddToYourPost from "./AddToYourPost";
+import ImagePreview from "./ImagePreview";
 
 export default function CreatePostPupop({ user }) {
   const [text, setText] = useState("");
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
+  const [images, setImages] = useState([]);
 
-  const textRef = useRef();
   return (
     <div className="blur">
       <div className="postBox">
@@ -32,24 +33,22 @@ export default function CreatePostPupop({ user }) {
           </div>
         </div>
 
-        {!show && (
-          <>
-            <div className="flex_center">
-              <textarea
-                ref={textRef}
-                className="post_input"
-                name="post"
-                maxLength="100"
-                placeholder={`Wtat's on your mind, ${user.firstName}`}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              ></textarea>
-            </div>
-            <EmojiPicker setText={setText} textRef={textRef} text={text} />
-          </>
+        {!show ? (
+          <EmojiPickerBackground setText={setText} text={text} user={user} />
+        ) : (
+          <ImagePreview
+            setText={setText}
+            text={text}
+            user={user}
+            images={images}
+            setImages={setImages}
+            setShow={setShow}
+          />
         )}
-        <AddToYourPost />
-        <button className="post_submit">Post</button>
+        <AddToYourPost setShow={setShow} />
+        <button className="post_submit" onClick={() => console.log("hello")}>
+          Post
+        </button>
       </div>
     </div>
   );
