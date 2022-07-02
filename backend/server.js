@@ -4,6 +4,7 @@ const fs = require('fs');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const globalErrorHandler = require('./controllers/errorHandler');
 const AppError = require('./utils/AppError');
 
@@ -23,6 +24,13 @@ const options = (req, res) => {
 };
 
 app.use(cors(options));
+
+//Image Upload
+app.use(
+  fileUpload({
+    useTempFiles: true,
+  })
+);
 
 // Routes
 
