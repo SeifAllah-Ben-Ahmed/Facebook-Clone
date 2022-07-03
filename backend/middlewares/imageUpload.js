@@ -20,7 +20,8 @@ module.exports = catchAsync(async (req, res, next) => {
       return next(new AppError('Unsupported format.', 400));
     }
     if (file.size > 1024 * 1024 * 2) {
-      return next(new AppError('File size is too large.', 400));
+      removeTmp(file.tempFilePath);
+      return next(new AppError('File size is too large. Max 2MB allowed', 400));
     }
   });
 

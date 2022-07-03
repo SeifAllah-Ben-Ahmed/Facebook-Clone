@@ -27,6 +27,7 @@ export default function EmojiPicker({
     setText(updateText);
     setCursor(start.length + emoji.length);
   };
+
   const postBackground = [
     "/images/postBackgrounds/1.jpg",
     "/images/postBackgrounds/2.jpg",
@@ -48,7 +49,11 @@ export default function EmojiPicker({
     setBackground("");
     backgroundRef.current.classList.remove("bgHandler");
   };
-
+  useEffect(() => {
+    if (!background && !type2) {
+      removeBackground();
+    }
+  }, [background]);
   return (
     <div className={type2 ? "images_input" : ""}>
       <div className={!type2 ? "flex_center" : ""} ref={backgroundRef}>
@@ -62,7 +67,7 @@ export default function EmojiPicker({
           onChange={(e) => setText(e.target.value)}
           style={{
             paddingTop: `${
-              background && show
+              background
                 ? textRef?.current &&
                   Math.abs(textRef?.current.value.length * 0.1 - 30)
                 : "0"

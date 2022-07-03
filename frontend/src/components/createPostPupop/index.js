@@ -1,21 +1,81 @@
 import { useRef, useState } from "react";
-
-import "./style.css";
+import PulseLoader from "react-spinners/PulseLoader";
 import EmojiPickerBackground from "./EmojiPickerBackground";
 import AddToYourPost from "./AddToYourPost";
 import ImagePreview from "./ImagePreview";
+import PostError from "./PostError";
+import dataURItoBlob from "../../helpers/dataURItoBlob";
 import useClickOutside from "../../helpers/clickOutside";
+import { createPost } from "../../functions/post";
+import { uploadImages } from "../../functions/uploadImages";
+import "./style.css";
 
 export default function CreatePostPupop({ user, setVisible }) {
-  const [text, setText] = useState("");
-  const [show, setShow] = useState(false);
-  const [images, setImages] = useState([]);
-  const [background, setBackground] = useState("");
   const postRef = useRef();
   useClickOutside(postRef, () => setVisible(false));
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState("");
+  const [background, setBackground] = useState("");
+  const [error, setError] = useState("");
+  const [images, setImages] = useState([]);
+
+  const postSubmit = async (e) => {
+    setLoading(true);
+    if (background) {
+      const res = await createPost(
+        null,
+        background,
+        text,
+        null,
+        user.id,
+        user.token
+      );
+
+      if (res === "ok") {
+        setBackground("");
+        setText("");
+        setVisible(false);
+      } else {
+        setError(res);
+      }
+    } else if (images.length) {
+      const postImages = images.map((image) => dataURItoBlob(image));
+      const path = `${user.username}/post images`;
+      const formData = new FormData();
+      formData.append("path", path);
+      postImages.forEach((image) => {
+        formData.append("file", image);
+      });
+      const res = await uploadImages(formData, user.token);
+      await createPost(null, null, text, res.images, user.id, user.token);
+      if (res.status === "success") {
+        setImages([]);
+        setText("");
+        setShow(false);
+        setVisible(false);
+      } else {
+        setError(res);
+      }
+    } else if (text.length) {
+      const res = await createPost(null, null, text, null, user.id, user.token);
+
+      if (res === "ok") {
+        setBackground("");
+        setText("");
+        setVisible(false);
+      } else {
+        setError(res);
+      }
+    } else {
+      console.log("first");
+    }
+    setLoading(false);
+  };
   return (
     <div className="blur">
       <div className="postBox" ref={postRef}>
+        {error && <PostError error={error} setError={setError} />}
         <div className="box_header">
           <div className="small_circle" onClick={() => setVisible(false)}>
             <i className="exit_icon"></i>
@@ -52,11 +112,16 @@ export default function CreatePostPupop({ user, setVisible }) {
             images={images}
             setImages={setImages}
             setShow={setShow}
+            setError={setError}
           />
         )}
         <AddToYourPost setShow={setShow} />
-        <button className="post_submit" onClick={() => console.log("hello")}>
-          Post
+        <button className="post_submit" onClick={postSubmit} disabled={loading}>
+          {loading ? (
+            <PulseLoader color="#fff" size={5} loading={loading} />
+          ) : (
+            "Post"
+          )}
         </button>
       </div>
     </div>

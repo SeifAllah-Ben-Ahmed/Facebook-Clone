@@ -8,16 +8,22 @@ export default function ImagePreview({
   images,
   setImages,
   setShow,
+  setError,
 }) {
   const imageInputRef = useRef(null);
   const handleImage = (e) => {
     let files = Array.from(e.target.files);
     files.forEach((img) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(img);
-      reader.onload = (readerEvent) => {
-        setImages((prev) => [...prev, readerEvent.target.result]);
-      };
+      if (img.type.startsWith("image")) {
+        const reader = new FileReader();
+        reader.readAsDataURL(img);
+        reader.onload = (readerEvent) => {
+          setImages((prev) => [...prev, readerEvent.target.result]);
+        };
+      } else {
+        setError("Unsupported format! only images are alloawd.");
+        return;
+      }
     });
   };
 
@@ -26,6 +32,7 @@ export default function ImagePreview({
       <EmojiPickerBackground setText={setText} text={text} user={user} type2 />
       <div className="add_pics_warp">
         <input
+          accept="image/*"
           type="file"
           multiple
           hidden

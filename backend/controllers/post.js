@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 
 exports.createPost = catchAsync(async (req, res, next) => {
   const post = await Post.create(req.body);
-  req.status(201).json({
+  res.status(201).json({
     status: 'success',
     post,
   });
