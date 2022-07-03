@@ -1,20 +1,23 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import "./style.css";
 import EmojiPickerBackground from "./EmojiPickerBackground";
 import AddToYourPost from "./AddToYourPost";
 import ImagePreview from "./ImagePreview";
+import useClickOutside from "../../helpers/clickOutside";
 
-export default function CreatePostPupop({ user }) {
+export default function CreatePostPupop({ user, setVisible }) {
   const [text, setText] = useState("");
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const [images, setImages] = useState([]);
-
+  const [background, setBackground] = useState("");
+  const postRef = useRef();
+  useClickOutside(postRef, () => setVisible(false));
   return (
     <div className="blur">
-      <div className="postBox">
+      <div className="postBox" ref={postRef}>
         <div className="box_header">
-          <div className="small_circle">
+          <div className="small_circle" onClick={() => setVisible(false)}>
             <i className="exit_icon"></i>
           </div>
           <span>Create Post</span>
@@ -34,7 +37,13 @@ export default function CreatePostPupop({ user }) {
         </div>
 
         {!show ? (
-          <EmojiPickerBackground setText={setText} text={text} user={user} />
+          <EmojiPickerBackground
+            setText={setText}
+            text={text}
+            user={user}
+            setBackground={setBackground}
+            background={background}
+          />
         ) : (
           <ImagePreview
             setText={setText}

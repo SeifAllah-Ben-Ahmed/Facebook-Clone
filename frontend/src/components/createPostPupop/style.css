@@ -22,7 +22,7 @@
 }
 .postBox .small_circle {
   position: absolute;
-  right: 60px;
+  right: 12px;
   top: 12px;
 }
 .box_profile {
@@ -356,4 +356,32 @@
 }
 .singular_grid img:nth-child(1) {
   grid-column: 1/3;
+}
+.post_backgrounds {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.post_backgrounds img {
+  height: 35px;
+  width: 35px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.no_bg {
+  background-color: var(--bg-secondary);
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.bgHandler {
+  height: 360px;
+  width: 100%;
+  background-size: cover;
+}
+.bgHandler textarea {
+  text-align: center;
+  height: 360px;
+  margin-top: 10px;
 }

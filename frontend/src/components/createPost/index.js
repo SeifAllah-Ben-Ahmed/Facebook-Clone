@@ -1,12 +1,14 @@
 import { Feeling, LiveVideo, Photo } from "../../svg";
 import "./style.css";
 
-export default function CreatePost({ user }) {
+export default function CreatePost({ user, setVisible }) {
   return (
     <div className="createPost">
       <div className="createPost_header">
         <img src={user?.picture} alt="post" />
-        <div className="open_post">What's on your mind, {user?.firstName}</div>
+        <div className="open_post" onClick={() => setVisible(true)}>
+          What's on your mind, {user?.firstName}
+        </div>
       </div>
       <div className="create_splitter"></div>
       <div className="createPost_body">
