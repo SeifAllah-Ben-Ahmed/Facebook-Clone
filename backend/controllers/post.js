@@ -8,3 +8,13 @@ exports.createPost = catchAsync(async (req, res, next) => {
     post,
   });
 });
+
+exports.getAllPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.find()
+    .populate('user', 'firstName lastName username picture gender')
+    .sort({ createdAt: -1 });
+  res.status(200).json({
+    status: 'success',
+    posts,
+  });
+});

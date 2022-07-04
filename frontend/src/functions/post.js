@@ -9,6 +9,9 @@ export const createPost = async (
   token
 ) => {
   try {
+    if (!text && !images?.length) {
+      return;
+    }
     await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/createPost`,
       {

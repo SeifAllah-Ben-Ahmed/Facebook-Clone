@@ -14,15 +14,19 @@ export default function ImagePreview({
   const handleImage = (e) => {
     let files = Array.from(e.target.files);
     files.forEach((img) => {
-      if (img.type.startsWith("image")) {
+      if (!img.type.startsWith("image")) {
+        setError("Unsupported format! only images are alloawd.");
+        return;
+      } else if (img.size > 1024 * 1024 * 2) {
+        setError(`${img.name} size is too large max 5mb allowed.`);
+        files = files.filter((item) => item.name !== img.name);
+        return;
+      } else {
         const reader = new FileReader();
         reader.readAsDataURL(img);
         reader.onload = (readerEvent) => {
           setImages((prev) => [...prev, readerEvent.target.result]);
         };
-      } else {
-        setError("Unsupported format! only images are alloawd.");
-        return;
       }
     });
   };
