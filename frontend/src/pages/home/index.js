@@ -8,6 +8,7 @@ import SendVerification from "../../components/home/sendVerification";
 import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import "./style.css";
+
 export default function Home({ setVisible, posts }) {
   const { user } = useSelector((store) => ({ ...store }));
   const middle = useRef(null);
@@ -25,7 +26,7 @@ export default function Home({ setVisible, posts }) {
         <CreatePost user={user} setVisible={setVisible} />
         <div className="posts">
           {posts?.map((post) => (
-            <Post key={post._id} post={post} />
+            <Post key={post._id} post={post} user={user} />
           ))}
         </div>
       </div>

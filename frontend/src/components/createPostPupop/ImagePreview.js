@@ -18,7 +18,7 @@ export default function ImagePreview({
         setError("Unsupported format! only images are alloawd.");
         return;
       } else if (img.size > 1024 * 1024 * 2) {
-        setError(`${img.name} size is too large max 5mb allowed.`);
+        setError(`${img.name} size is too large max 2mb allowed.`);
         files = files.filter((item) => item.name !== img.name);
         return;
       } else {
