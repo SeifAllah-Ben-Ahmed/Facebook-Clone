@@ -174,3 +174,11 @@ exports.changePassword = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: 'success', message: 'Password been updated successfully' });
 });
+exports.getProfile = catchAsync(async (req, res, next) => {
+  const { username } = req.params;
+  const user = await User.findOne({ username }).select('-password');
+  if (!user) {
+    return next(new AppError('User not found.', 404));
+  }
+  res.status(200).json({ status: 'success', user });
+});

@@ -463,7 +463,10 @@ header {
   width: 20px;
   height: 20px;
 }
-
+.active_link {
+  background: var(--light-blue-color);
+  color: var(--blue-color);
+}
 /*-------User menu----*/
 
 /*---responsive----------*/

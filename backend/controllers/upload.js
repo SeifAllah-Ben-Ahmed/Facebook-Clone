@@ -52,3 +52,18 @@ exports.uploadImages = catchAsync(async (req, res, next) => {
     images,
   });
 });
+exports.listImages = catchAsync(async (req, res, next) => {
+  const { path, sort, max } = req.body;
+  /**
+   * "sort":"desc",
+   * "max":"20",
+   * "path":"username/folder name or * to get all images"
+   */
+  cloudinary.v2.search
+    .expression(`${path}`)
+    .sort_by('created_at', `${sort}`)
+    .max_results(max)
+    .execute()
+    .then((resulte) => res.json(resulte))
+    .catch((err) => next(new AppError(err.error.message, 500)));
+});

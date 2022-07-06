@@ -41,7 +41,7 @@ export default function CreatePostPupop({ user, setVisible }) {
       }
     } else if (images.length) {
       const postImages = images.map((image) => dataURItoBlob(image));
-      const path = `${user.username}/post images`;
+      const path = `${user.username}/post_images`;
       const formData = new FormData();
       formData.append("path", path);
       postImages.forEach((image) => {
