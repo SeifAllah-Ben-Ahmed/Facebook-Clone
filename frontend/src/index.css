@@ -38,7 +38,8 @@ a {
   --shadow-inset: rgba(255, 255, 255, 0.5);
 }
 /*---- Buttons ----*/
-.blue_btn {
+.blue_btn,
+.light_blue_btn {
   border: none;
   outline: none;
   background-color: var(--blue-color);
@@ -53,6 +54,9 @@ a {
   justify-content: center;
   gap: 6px;
   cursor: pointer;
+}
+.light_blue_btn {
+  background-color: var(--light-blue-color);
 }
 .gray_btn {
   border: none;
@@ -122,3 +126,10 @@ a {
   background: var(--bg-third);
   cursor: pointer;
 }
+/*----filters---*/
+.filter_blue {
+  filter: invert(39%) sepia(57%) saturate(200%) saturate(200%) saturate(200%)
+    saturate(200%) saturate(200%) saturate(147.75%) hue-rotate(202deg)
+    brightness(97%) contrast(96%);
+}
+/*----filters---*/

@@ -11,6 +11,7 @@ const {
 } = require('../utils/mailer');
 const Code = require('../models/code');
 const generateCode = require('../utils/generateCode');
+const Post = require('../models/post');
 
 exports.register = catchAsync(async (req, res, next) => {
   const { firstName, lastName, email, password, gender, bMonth, bDay, bYear } =
@@ -125,6 +126,7 @@ exports.sendVerification = catchAsync(async (req, res, next) => {
     message: 'Email verification link has been send via email',
   });
 });
+
 exports.findUser = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email }).select('-password');
@@ -153,6 +155,7 @@ exports.sendResetPasswordCode = catchAsync(async (req, res, next) => {
     picture: user.picture,
   });
 });
+
 exports.validateResetCode = catchAsync(async (req, res, next) => {
   const { email, code } = req.body;
   const user = await User.findOne({ email }).select('-password');
@@ -164,6 +167,7 @@ exports.validateResetCode = catchAsync(async (req, res, next) => {
 
   res.status(204).json({ status: 'success' });
 });
+
 exports.changePassword = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -174,11 +178,13 @@ exports.changePassword = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: 'success', message: 'Password been updated successfully' });
 });
+
 exports.getProfile = catchAsync(async (req, res, next) => {
   const { username } = req.params;
   const user = await User.findOne({ username }).select('-password');
   if (!user) {
     return next(new AppError('User not found.', 404));
   }
-  res.status(200).json({ status: 'success', user });
+  const posts = await Post.find({ user: user._id }).populate('user');
+  res.status(200).json({ status: 'success', user, posts });
 });

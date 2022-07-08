@@ -43,7 +43,7 @@ function App() {
     } catch (error) {
       dispatch({
         type: "POSTS_ERROR",
-        payload: error.response.data?.message,
+        payload: error?.response?.data?.message,
       });
     }
   };
@@ -64,8 +64,14 @@ function App() {
             element={<Home setVisible={setVisible} posts={posts} />}
           />
           <Route path="/activate/:token" element={<Activate />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/:username" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={<Profile setVisible={setVisible} />}
+          />
+          <Route
+            path="/profile/:username"
+            element={<Profile setVisible={setVisible} />}
+          />
         </Route>
         <Route path="/reset" element={<Reset />} />
       </Routes>

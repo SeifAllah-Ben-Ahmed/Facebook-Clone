@@ -59,6 +59,7 @@ exports.listImages = catchAsync(async (req, res, next) => {
    * "max":"20",
    * "path":"username/folder name or * to get all images"
    */
+
   cloudinary.v2.search
     .expression(`${path}`)
     .sort_by('created_at', `${sort}`)

@@ -50,3 +50,29 @@ export function profileReducer(state, { type, payload }) {
       return state;
   }
 }
+export function photosReducer(state, { type, payload }) {
+  switch (type) {
+    case "PHOTOS_REQUEST":
+      return {
+        ...state,
+        loading: true,
+        error: "",
+      };
+    case "PHOTOS_SUCCESS":
+      return {
+        ...state,
+        loading: false,
+        photos: payload,
+        error: "",
+      };
+    case "PHOTOS_ERROR":
+      return {
+        ...state,
+        loading: false,
+        error: payload,
+      };
+
+    default:
+      return state;
+  }
+}
