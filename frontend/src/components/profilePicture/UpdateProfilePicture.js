@@ -1,15 +1,25 @@
 import { useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import PulseLoader from "react-spinners/PulseLoader";
+import Cookies from "js-cookie";
 import { createPost } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import { updateprofilePicture } from "../../functions/user";
 import getCroppedImg from "../../helpers/getCroppedImg";
 
-export default function UpdateProfilePicture({ setImage, image, setError }) {
+export default function UpdateProfilePicture({
+  setImage,
+  image,
+  setError,
+  setShow,
+  pRef,
+}) {
+  const dispatch = useDispatch();
   const [description, setDescription] = useState("");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const slider = useRef(null);
   const { user } = useSelector((state) => ({ ...state }));
@@ -32,9 +42,7 @@ export default function UpdateProfilePicture({ setImage, image, setError }) {
           setZoom(1);
           setCrop({ x: 0, y: 0 });
           setImage(img);
-          console.log("just show");
         } else {
-          console.log("not show");
           return img;
         }
       } catch (error) {
@@ -45,6 +53,7 @@ export default function UpdateProfilePicture({ setImage, image, setError }) {
   );
   const updateProfielPicture = async () => {
     try {
+      setLoading(true);
       let img = await getCroppedImage();
 
       let blob = await fetch(img).then((b) => b.blob());
@@ -59,7 +68,6 @@ export default function UpdateProfilePicture({ setImage, image, setError }) {
         user.token
       );
       if (updated_picture === "ok") {
-        console.log(updated_picture === "ok");
         const new_post = await createPost(
           "profilePicture",
           null,
@@ -69,14 +77,31 @@ export default function UpdateProfilePicture({ setImage, image, setError }) {
           user.token
         );
         if (new_post === "ok") {
-          console.log("post :", updated_picture);
+          setLoading(false);
+          setImage("");
+          pRef.current.style.backgroundImage = `url(${res.images[0].url})`;
+          Cookies.set(
+            "user",
+            JSON.stringify({
+              ...user,
+              picture: res.images[0].url,
+            })
+          );
+          dispatch({
+            type: "UPDATEPICTURE",
+            payload: res.images[0].url,
+          });
+          setShow(false);
         } else {
+          setLoading(false);
           setError(new_post);
         }
       } else {
-        setError(updated_picture);
+        setLoading(false);
+        setError(updated_picture.message);
       }
     } catch (error) {
+      setLoading(false);
       setError(error?.response?.data?.message);
     }
   };
@@ -142,9 +167,15 @@ export default function UpdateProfilePicture({ setImage, image, setError }) {
         Your profile picture is public
       </div>
       <div className="update_submit_wrap">
-        <div className="blue_link">Cancel</div>
-        <button className="blue_btn" onClick={() => updateProfielPicture()}>
-          Save
+        <div className="blue_link" onClick={() => setImage(false)}>
+          Cancel
+        </div>
+        <button
+          className="blue_btn"
+          disabled={loading}
+          onClick={() => updateProfielPicture()}
+        >
+          {loading ? <PulseLoader color="#fff" size={5} /> : "Save"}
         </button>
       </div>
     </div>
