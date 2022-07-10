@@ -19,6 +19,7 @@ export default function Profile({ setVisible }) {
   const { user } = useSelector((state) => ({ ...state }));
   // Default username = loggedin user username
   const { username = user.username } = useParams();
+  const [othername, setOthername] = useState("");
   const navigate = useNavigate();
   const [{ profile, loading, error }, dispatch] = useReducer(profileReducer, {
     profile: {},
@@ -62,7 +63,11 @@ export default function Profile({ setVisible }) {
       <div className="profile_top">
         <div className="profile_container">
           <Cover cover={profile?.cover} visitor={visitor} />
-          <ProfilePicture profile={profile} visitor={visitor} />
+          <ProfilePicture
+            profile={profile}
+            visitor={visitor}
+            othername={othername}
+          />
           <ProfileMenu />
         </div>
       </div>

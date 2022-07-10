@@ -185,6 +185,15 @@ exports.getProfile = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('User not found.', 404));
   }
-  const posts = await Post.find({ user: user._id }).populate('user');
+  const posts = await Post.find({ user: user._id })
+    .populate('user')
+    .sort({ createdAt: -1 });
   res.status(200).json({ status: 'success', user, posts });
+});
+
+exports.updateProfilePicture = catchAsync(async (req, res, next) => {
+  const { url } = req.body;
+  await User.findByIdAndUpdate(req.user.id, { picture: url });
+
+  res.status(200).json({ status: 'success', url });
 });

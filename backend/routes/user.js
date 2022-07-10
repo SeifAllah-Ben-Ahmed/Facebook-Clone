@@ -13,5 +13,10 @@ router.post('/sendResetPasswordCode', userControllers.sendResetPasswordCode);
 router.post('/validateResetCode', userControllers.validateResetCode);
 router.post('/changePassword', userControllers.changePassword);
 router.get('/getProfile/:username', authUser, userControllers.getProfile);
+router.put(
+  '/updateProfilePicture',
+  authUser,
+  userControllers.updateProfilePicture
+);
 
 module.exports = router;

@@ -24,7 +24,7 @@ export default function Post({ post, user, profile }) {
               {post?.user?.firstName} {post?.user?.lastName}
             </div>
             <div className="updated_p">
-              {post.type === "profilePicture" &&
+              {post.postType === "profilePicture" &&
                 `updated ${
                   post?.user?.gender === "male" ? "his" : "her"
                 } profile picture`}

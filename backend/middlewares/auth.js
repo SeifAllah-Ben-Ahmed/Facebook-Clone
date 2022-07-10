@@ -8,11 +8,13 @@ exports.authUser = catchAsync(async (req, res, next) => {
   const token = tmp && tmp.split(' ')[1];
 
   if (!token) {
-    next(
+    return next(
       new AppError('You are not authorized, Please login to get access', 400)
     );
   }
   const { id } = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
   req.user = { id };
+
   next();
 });

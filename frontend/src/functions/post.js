@@ -15,7 +15,7 @@ export const createPost = async (
     await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/createPost`,
       {
-        type,
+        postType: type,
         background,
         text,
         images,
