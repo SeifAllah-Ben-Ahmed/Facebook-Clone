@@ -21,11 +21,18 @@ export default function Profile({ setVisible }) {
   const { username = user.username } = useParams();
   const [othername, setOthername] = useState("");
   const navigate = useNavigate();
+  const [photos, setPhotos] = useState({});
   const [{ profile, loading, error }, dispatch] = useReducer(profileReducer, {
     profile: {},
     loading: false,
     error: "",
   });
+  const dataBody = {
+    path: `${username}/*`,
+    max: 30,
+    sort: "desc",
+  };
+
   const getProfile = async () => {
     try {
       dispatch({
@@ -39,6 +46,17 @@ export default function Profile({ setVisible }) {
           },
         }
       );
+
+      const images = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/listImages`,
+        dataBody,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      setPhotos(images.data);
 
       dispatch({
         type: "PROFILE_SUCCESS",
@@ -67,6 +85,7 @@ export default function Profile({ setVisible }) {
             profile={profile}
             visitor={visitor}
             othername={othername}
+            photos={photos.resources}
           />
           <ProfileMenu />
         </div>
@@ -77,7 +96,11 @@ export default function Profile({ setVisible }) {
             <PplYouMayKnow />
             <div className="profile_grid">
               <div className="profile_left">
-                <Photos username={username} token={user.token} />
+                <Photos
+                  photos={photos}
+                  username={username}
+                  token={user.token}
+                />
                 <Friends friends={profile.friends} />
                 <div className="relative_fb_copyright">
                   <Link to="/">Privacy </Link>

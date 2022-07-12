@@ -3,13 +3,15 @@ import UpdateProfilePicture from "./UpdateProfilePicture";
 
 import "./style.css";
 import useClickOutside from "../../helpers/clickOutside";
+import { useSelector } from "react-redux";
 
-export default function ProfilePic({ username, setShow, pRef }) {
+export default function ProfilePic({ username, setShow, pRef, photos }) {
   const popup = useRef(null);
   const refInput = useRef(null);
+  const { user } = useSelector((state) => ({ ...state }));
   const [image, setImage] = useState("");
   const [error, setError] = useState("");
-  useClickOutside(popup, () => setShow(false));
+  // useClickOutside(popup, () => setShow(false));
 
   const handleImage = (e) => {
     let file = e.target.files[0];
@@ -67,7 +69,38 @@ export default function ProfilePic({ username, setShow, pRef }) {
             </button>
           </div>
         )}
-        <div className="old_pictures_wrap"></div>
+        <div className="old_pictures_wrap">
+          <h4>Your profile pictures</h4>
+          <div className="old_pictures">
+            {photos
+              ?.filter(
+                (photo) => photo.folder === `${user.username}/profile_pictures`
+              )
+              ?.map((photo) => (
+                <img
+                  src={photo.secure_url}
+                  alt="profile"
+                  key={photo.public_id}
+                  onClick={() => setImage(photo.secure_url)}
+                />
+              ))}
+          </div>
+          <h4>Other pictures</h4>
+          <div className="old_pictures">
+            {photos
+              ?.filter(
+                (photo) => photo.folder === `${user.username}/profile_pictures`
+              )
+              ?.map((photo) => (
+                <img
+                  src={photo.secure_url}
+                  alt="profile"
+                  key={photo.public_id}
+                  onClick={() => setImage(photo.secure_url)}
+                />
+              ))}
+          </div>
+        </div>
       </div>
       {image && (
         <UpdateProfilePicture
