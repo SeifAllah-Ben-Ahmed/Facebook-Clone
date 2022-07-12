@@ -197,3 +197,9 @@ exports.updateProfilePicture = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ status: 'success', url });
 });
+exports.updateCover = catchAsync(async (req, res, next) => {
+  const { url } = req.body;
+  await User.findByIdAndUpdate(req.user.id, { cover: url });
+
+  res.status(200).json({ status: 'success', url });
+});

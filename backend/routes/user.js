@@ -18,5 +18,6 @@ router.put(
   authUser,
   userControllers.updateProfilePicture
 );
+router.put('/updateCover', authUser, userControllers.updateCover);
 
 module.exports = router;

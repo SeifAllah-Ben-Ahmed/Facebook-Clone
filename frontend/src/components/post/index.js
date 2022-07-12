@@ -28,7 +28,7 @@ export default function Post({ post, user, profile }) {
                 `updated ${
                   post?.user?.gender === "male" ? "his" : "her"
                 } profile picture`}
-              {post.type === "cover" &&
+              {post.postType === "cover" &&
                 `updated ${
                   post?.user?.gender === "male" ? "his" : "her"
                 } cover picture`}
@@ -92,7 +92,13 @@ export default function Post({ post, user, profile }) {
           />
         </div>
       ) : (
-        <div className="post_cover_wrap">cov pin</div>
+        <div className="post_cover_wrap">
+          <img
+            src={post.images[0].url}
+            // className="post_updated_picture"
+            alt="profile"
+          />
+        </div>
       )}
 
       <div className="post_infos">
