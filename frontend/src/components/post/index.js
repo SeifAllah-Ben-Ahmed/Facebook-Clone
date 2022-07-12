@@ -55,7 +55,7 @@ export default function Post({ post, user, profile }) {
         >
           <div className="post_bg_text">{post.text}</div>
         </div>
-      ) : (
+      ) : post.postType === null ? (
         <>
           <div className="post_text">{post?.text}</div>
           {post?.images?.length ? (
@@ -80,7 +80,21 @@ export default function Post({ post, user, profile }) {
             </div>
           ) : null}
         </>
+      ) : post.postType === "profilePicture" ? (
+        <div className="post_profile_wrap">
+          <div className="post_updated_bg">
+            {post.user?.cover && <img src={post.user.cover} alt="cover" />}
+          </div>
+          <img
+            src={post.images[0].url}
+            className="post_updated_picture"
+            alt="profile"
+          />
+        </div>
+      ) : (
+        <div className="post_cover_wrap">cov pin</div>
       )}
+
       <div className="post_infos">
         <div className="reacts_count">
           <div className="reacts_count_imgs"></div>

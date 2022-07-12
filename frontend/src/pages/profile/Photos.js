@@ -1,8 +1,4 @@
-import { useEffect, useReducer } from "react";
-import axios from "axios";
-import { photosReducer } from "../../functions/reducer";
-
-export default function Photos({ username, token, photos }) {
+export default function Photos({ photos }) {
   return (
     <div className="profile_card">
       <div className="profile_card_header">
