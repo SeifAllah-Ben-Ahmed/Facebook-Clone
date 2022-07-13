@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import Bio from "./Bio";
+import EditDetails from "./EditDetails";
 import "./style.css";
 
 export default function Intro({ detailss, visitor }) {
   const { user } = useSelector((state) => ({ ...state }));
   const [details, setDetails] = useState(detailss);
-  console.log({ details, detailss });
+
   const initial = {
     bio: details?.bio ? details.bio : "",
     otherName: details?.otherName ? details.otherName : "",
@@ -22,16 +23,20 @@ export default function Intro({ detailss, visitor }) {
   };
   const [infos, setInfos] = useState(initial);
   const [showBio, setShowBio] = useState(false);
-  const [max, setMax] = useState(infos.bio ? 100 - infos.bio.length : 100);
+  const [max, setMax] = useState(infos?.bio ? 100 - infos.bio.length : 100);
+  const [visible, setVisible] = useState(false);
 
-  const handleBioChange = (e) => {
-    setInfos({ ...infos, bio: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInfos({ ...infos, [name]: value });
     setMax(100 - e.target.value.length);
   };
   useEffect(() => {
     setDetails(detailss);
+    setInfos(detailss);
   }, [detailss]);
   const updateDetails = async () => {
+    console.log(infos);
     try {
       const { data } = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/updateDetails`,
@@ -64,13 +69,23 @@ export default function Intro({ detailss, visitor }) {
           )}
         </div>
       )}
+      {!details?.bio && !showBio && !visitor && (
+        <button
+          className="gray_btn hover1 w100"
+          onClick={() => setShowBio(true)}
+        >
+          Add Bio
+        </button>
+      )}
       {showBio && (
         <Bio
-          infos={details}
-          handleBioChange={handleBioChange}
+          infos={infos}
           max={max}
+          handleChange={handleChange}
           setShowBio={setShowBio}
           updateDetails={updateDetails}
+          placeholder="Add Bio"
+          name="bio"
         />
       )}
 
@@ -108,7 +123,7 @@ export default function Intro({ detailss, visitor }) {
       {details?.highSchool && (
         <div className="info_profile">
           <img src="/icons/studies.png" alt="highSchool" />
-          Studied at{details?.highSchool}
+          Studied at {details?.highSchool}
         </div>
       )}
       {details?.currentCity && (
@@ -129,13 +144,28 @@ export default function Intro({ detailss, visitor }) {
           <a
             href={`https://www.instagram.com/${details?.instagram}`}
             target="_blank"
+            rel="noreferrer"
           >
             {details?.instagram}
           </a>
         </div>
       )}
       {!visitor && (
-        <button className="gray_btn hover1 w100">Edite Details</button>
+        <button
+          className="gray_btn hover1 w100"
+          onClick={() => setVisible(true)}
+        >
+          Edite Details
+        </button>
+      )}
+      {visible && !visitor && (
+        <EditDetails
+          details={details}
+          handleChange={handleChange}
+          updateDetails={updateDetails}
+          infos={infos}
+          setVisible={setVisible}
+        />
       )}
       {!visitor && (
         <button className="gray_btn hover1 w100">Add Hobbies</button>
