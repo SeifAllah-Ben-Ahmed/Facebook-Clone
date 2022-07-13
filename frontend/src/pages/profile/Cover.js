@@ -17,7 +17,7 @@ export default function Cover({ cover, visitor, photos }) {
   const cRef = useRef(null);
   const [coverPicture, setCoverPicture] = useState("");
   const [loading, setLoading] = useState("");
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
 
   const [width, setWidth] = useState(0);
   const [error, setError] = useState("");

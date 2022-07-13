@@ -203,3 +203,17 @@ exports.updateCover = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ status: 'success', url });
 });
+
+exports.updateDetails = catchAsync(async (req, res, next) => {
+  const { infos } = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { details: infos },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({ status: 'success', details: user.details });
+});

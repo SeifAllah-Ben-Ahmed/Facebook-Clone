@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CreatePost from "../../components/createPost";
 import Header from "../../components/header";
+import Intro from "../../components/intro";
 import Post from "../../components/post";
 import { profileReducer } from "../../functions/reducer";
 import Cover from "./Cover";
@@ -100,6 +101,7 @@ export default function Profile({ setVisible }) {
             <PplYouMayKnow />
             <div className="profile_grid">
               <div className="profile_left">
+                <Intro detailss={profile.details} visitor={visitor} />
                 <Photos
                   photos={photos}
                   username={username}

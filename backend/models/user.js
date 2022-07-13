@@ -122,11 +122,10 @@ const userSchema = new mongoose.Schema(
       },
       relationship: {
         type: String,
-
         enum: {
-          values: ['Single', 'In a relationship', 'Married', 'Divorced'],
+          values: ['Single', 'In a relationship', 'Married', 'Divorced', ''],
           message:
-            'Difficulty is either : Single, In a relationship, Married,  Divorced',
+            'Relationship is either : Single, In a relationship, Married,  Divorced',
         },
       },
       instagram: {
