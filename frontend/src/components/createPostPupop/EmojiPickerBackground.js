@@ -1,5 +1,6 @@
 import Picker from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 export default function EmojiPicker({
   text,
@@ -54,12 +55,18 @@ export default function EmojiPicker({
       removeBackground();
     }
   }, [background]);
+  const sm = useMediaQuery({
+    query: "(max-width:550px)",
+  });
+
   return (
     <div className={type2 ? "images_input" : ""}>
       <div className={!type2 ? "flex_center" : ""} ref={backgroundRef}>
         <textarea
           ref={textRef}
-          className={`post_input ${type2 ? "input2" : ""}`}
+          className={`post_input ${type2 ? "input2" : ""} ${
+            sm && !background ? "l0" : ""
+          }`}
           name="post"
           maxLength="250"
           placeholder={`Wtat's on your mind, ${user?.firstName}`}
