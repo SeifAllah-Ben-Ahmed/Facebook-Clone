@@ -55,6 +55,7 @@ exports.register = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
 exports.activateAccount = catchAsync(async (req, res, next) => {
   const { token } = req.body;
   const { id } = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -109,6 +110,7 @@ exports.login = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
 exports.sendVerification = catchAsync(async (req, res, next) => {
   const { id } = req.user;
   const user = await User.findById(id);
@@ -181,14 +183,36 @@ exports.changePassword = catchAsync(async (req, res, next) => {
 
 exports.getProfile = catchAsync(async (req, res, next) => {
   const { username } = req.params;
+  const me = await User.findById(req.user.id);
   const user = await User.findOne({ username }).select('-password');
   if (!user) {
     return next(new AppError('User not found.', 404));
   }
+  const friendship = {
+    friends: false,
+    following: false,
+    requestSent: false,
+    requestReceived: false,
+  };
+  if (me._id !== user._id) {
+    if (me.friends.includes(user._id) && user.friends.includes(me._id)) {
+      friendship.friends = true;
+    }
+    if (me.following.includes(user._id)) {
+      friendship.following = true;
+    }
+    if (me.requests.includes(user._id)) {
+      friendship.requestReceived = true;
+    }
+    if (user.requests.includes(me._id)) {
+      friendship.requestSent = true;
+    }
+  }
   const posts = await Post.find({ user: user._id })
     .populate('user')
     .sort({ createdAt: -1 });
-  res.status(200).json({ status: 'success', user, posts });
+
+  res.status(200).json({ status: 'success', user, posts, friendship });
 });
 
 exports.updateProfilePicture = catchAsync(async (req, res, next) => {
@@ -197,6 +221,7 @@ exports.updateProfilePicture = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ status: 'success', url });
 });
+
 exports.updateCover = catchAsync(async (req, res, next) => {
   const { url } = req.body;
   await User.findByIdAndUpdate(req.user.id, { cover: url });
@@ -216,4 +241,187 @@ exports.updateDetails = catchAsync(async (req, res, next) => {
   );
 
   res.status(200).json({ status: 'success', details: user.details });
+});
+
+exports.addFriend = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant send a request', 400));
+  }
+  const sender = await User.findById(user.id);
+  const receiver = await User.findById(id);
+
+  if (
+    receiver.requests.includes(sender._id) ||
+    receiver.friends.includes(sender._id)
+  ) {
+    return next(new AppError('Request allready sent', 400));
+  }
+
+  await receiver.updateOne({ $push: { requests: sender._id } });
+  await receiver.updateOne({ $push: { followers: sender._id } });
+  await sender.updateOne({ $push: { following: receiver._id } });
+
+  res
+    .status(200)
+    .json({ status: 'success', message: 'Freind request has been sent' });
+});
+
+exports.cancelRequest = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const sender = await User.findById(user.id);
+  const receiver = await User.findById(id);
+  if (!receiver.requests.includes(sender._id)) {
+    return next(new AppError('Request allready sent', 400));
+  }
+  await receiver.updateOne({ $pull: { requests: sender._id } });
+  await receiver.updateOne({ $pull: { followers: sender._id } });
+  await sender.updateOne({ $pull: { following: receiver._id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Freind request canceled successfully',
+  });
+});
+
+exports.follow = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const sender = await User.findById(user.id);
+  const receiver = await User.findById(id);
+  if (
+    receiver.followers.includes(sender._id) ||
+    sender.friends.includes(receiver._id)
+  ) {
+    return next(new AppError('Request allready sent', 400));
+  }
+  await receiver.updateOne({ $push: { followers: sender._id } });
+
+  await sender.updateOne({ $push: { following: receiver._id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Freind follow successfully',
+  });
+});
+
+exports.unfollow = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const sender = await User.findById(user.id);
+  const receiver = await User.findById(id);
+  if (
+    !receiver.followers.includes(sender._id) &&
+    !sender.followers.includes(receiver._id)
+  ) {
+    return next(new AppError('Request allready sent', 400));
+  }
+  await receiver.updateOne({ $pull: { followers: sender._id } });
+  await sender.updateOne({ $pull: { following: receiver._id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Freind request canceled successfully',
+  });
+});
+
+exports.acceptRequest = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const receiver = await User.findById(user.id);
+  const sender = await User.findById(id);
+  if (!receiver.requests.includes(sender._id)) {
+    return next(new AppError('Request allready sent', 400));
+  }
+
+  await receiver.updateOne({
+    $push: { friends: sender._id, following: sender._id },
+  });
+  await sender.updateOne({
+    $push: { friends: receiver._id, followers: receiver._id },
+  });
+
+  await receiver.updateOne({ $pull: { requests: sender._id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Freind request accepted successfully',
+  });
+});
+
+exports.unfriend = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const sender = await User.findById(user.id);
+  const receiver = await User.findById(id);
+  if (
+    !receiver.friends.includes(sender._id) ||
+    sender.friends.includes(receiver._id)
+  ) {
+    return next(new AppError('Request allready sent', 400));
+  }
+
+  await receiver.updateOne({
+    $pull: {
+      friends: sender._id,
+      following: sender._id,
+      followers: sender._id,
+    },
+  });
+  await sender.updateOne({
+    $pull: {
+      friends: receiver._id,
+      following: receiver._id,
+      followers: receiver._id,
+    },
+  });
+
+  await receiver.updateOne({ $pull: { requests: sender._id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Unfreind request successfully',
+  });
+});
+
+exports.deleteRequest = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { id } = req.params;
+  if (user.id === id) {
+    return next(new AppError('You cant cancel a request', 400));
+  }
+  const receiver = await User.findById(user.id);
+  const sender = await User.findById(id);
+  if (!receiver.requests.includes(sender._id)) {
+    return next(new AppError('Request allready sent', 400));
+  }
+
+  await receiver.updateOne({
+    $pull: { requests: sender._id, followers: sender._id },
+  });
+  await sender.updateOne({
+    $pull: { following: receiver._id },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Cancel request successfully',
+  });
 });

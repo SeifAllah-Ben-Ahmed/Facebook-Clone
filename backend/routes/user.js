@@ -20,5 +20,12 @@ router.put(
 );
 router.put('/updateCover', authUser, userControllers.updateCover);
 router.put('/updateDetails', authUser, userControllers.updateDetails);
+router.put('/addFriend/:id', authUser, userControllers.addFriend);
+router.put('/cancelRequest/:id', authUser, userControllers.cancelRequest);
+router.put('/follow/:id', authUser, userControllers.follow);
+router.put('/unfollow/:id', authUser, userControllers.unfollow);
+router.put('/acceptRequest/:id', authUser, userControllers.acceptRequest);
+router.put('/unfriend/:id', authUser, userControllers.unfriend);
+router.put('/deleteRequest/:id', authUser, userControllers.deleteRequest);
 
 module.exports = router;

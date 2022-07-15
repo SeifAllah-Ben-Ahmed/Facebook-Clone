@@ -62,7 +62,11 @@ export default function Profile({ setVisible }) {
 
       dispatch({
         type: "PROFILE_SUCCESS",
-        payload: { ...data.user, posts: data.posts },
+        payload: {
+          ...data.user,
+          posts: data.posts,
+          friendship: data.friendship,
+        },
       });
     } catch (error) {
       navigate("/profile");
@@ -99,15 +103,7 @@ export default function Profile({ setVisible }) {
     setScrollHeight(window.pageYOffset);
   };
 
-  console.log(
-    "text",
-    check && scrollHeight >= height && leftHeight > 1000
-      ? "scrollFixed showLess"
-      : check && scrollHeight >= height && leftHeight < 1000
-      ? "scrollFixed showMore"
-      : "",
-    { check, scrollHeight, height, leftHeight }
-  );
+  console.log(profile);
   return (
     <div className="profile">
       <Header page="profile" />
