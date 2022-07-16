@@ -106,6 +106,7 @@ export default function Cover({ cover, visitor, photos }) {
       setError(error?.response?.data?.message);
     }
   };
+
   return (
     <div className="profile_cover" ref={coverRef}>
       {coverPicture && (

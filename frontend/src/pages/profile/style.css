@@ -434,6 +434,9 @@
   .bottom_container {
     padding: 5px;
   }
+  .friendship {
+    transform: translateY(-4rem);
+  }
 }
 @media (max-width: 650px) {
   .profile_menu_wrap {
@@ -458,4 +461,10 @@
 }
 .showMore .profile_left {
   top: 54px;
+}
+.friendship {
+  z-index: 9;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
