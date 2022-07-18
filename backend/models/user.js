@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     picture: {
       type: String,
       trim: true,
-      default: 'default',
+      default: '/images/default_pic.png',
     },
     cover: {
       type: String,
@@ -70,23 +70,30 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    friends: {
-      type: Array,
-      default: [],
-    },
-    following: {
-      type: Array,
-      default: [],
-    },
-    followers: {
-      type: Array,
-      default: [],
-    },
-    requests: {
-      type: Array,
-      default: [],
-    },
-
+    friends: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
+    requests: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
     search: [
       {
         user: {

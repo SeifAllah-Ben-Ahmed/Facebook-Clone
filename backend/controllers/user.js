@@ -185,6 +185,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
   const { username } = req.params;
   const me = await User.findById(req.user.id);
   const user = await User.findOne({ username }).select('-password');
+
   if (!user) {
     return next(new AppError('User not found.', 404));
   }
@@ -208,6 +209,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
       friendship.requestSent = true;
     }
   }
+  await user.populate('friends', 'firstName lastName username picture');
   const posts = await Post.find({ user: user._id })
     .populate('user')
     .sort({ createdAt: -1 });
@@ -299,7 +301,7 @@ exports.follow = catchAsync(async (req, res, next) => {
   const receiver = await User.findById(id);
   if (
     receiver.followers.includes(sender._id) ||
-    sender.friends.includes(receiver._id)
+    sender.following.includes(receiver._id)
   ) {
     return next(new AppError('Request allready sent', 400));
   }
@@ -322,8 +324,8 @@ exports.unfollow = catchAsync(async (req, res, next) => {
   const sender = await User.findById(user.id);
   const receiver = await User.findById(id);
   if (
-    !receiver.followers.includes(sender._id) &&
-    !sender.followers.includes(receiver._id)
+    !receiver.followers.includes(sender._id) ||
+    !sender.following.includes(receiver._id)
   ) {
     return next(new AppError('Request allready sent', 400));
   }
@@ -373,7 +375,7 @@ exports.unfriend = catchAsync(async (req, res, next) => {
   const receiver = await User.findById(id);
   if (
     !receiver.friends.includes(sender._id) ||
-    sender.friends.includes(receiver._id)
+    !sender.friends.includes(receiver._id)
   ) {
     return next(new AppError('Request allready sent', 400));
   }
