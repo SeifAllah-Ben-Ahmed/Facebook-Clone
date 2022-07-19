@@ -77,7 +77,7 @@ export default function Cover({ cover, visitor, photos }) {
       let formData = new FormData();
       formData.append("file", blob);
       formData.append("path", path);
-      const res = await uploadImages(formData, path, user.token);
+      const res = await uploadImages(formData, user.token);
 
       const updated_picture = await updateCover(res.images[0].url, user.token);
       if (updated_picture === "ok") {

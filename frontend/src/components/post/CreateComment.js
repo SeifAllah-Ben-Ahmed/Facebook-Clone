@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Picker from "emoji-picker-react";
+import { ClipLoader } from "react-spinners";
+import { addComment } from "../../functions/post";
+import { uploadImages } from "../../functions/uploadImages";
+import dataURItoBlob from "../../helpers/dataURItoBlob";
 
-export default function CreateComment() {
+export default function CreateComment({ postId, setComments, setCount }) {
   const { user } = useSelector((store) => ({ ...store }));
   const textRef = useRef();
   const imgRef = useRef();
@@ -11,6 +15,7 @@ export default function CreateComment() {
   const [cursor, setCursor] = useState(null);
   const [image, setImage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     textRef.current.selectionEnd = cursor;
@@ -27,7 +32,7 @@ export default function CreateComment() {
   };
   const handleImage = (e) => {
     const file = e.target.files[0];
-    console.log(file);
+
     if (!file.type.startsWith("image")) {
       setError("Unsupported format! only images are alloawd.");
       return;
@@ -40,6 +45,47 @@ export default function CreateComment() {
       reader.onload = (readerEvent) => {
         setImage(readerEvent.target.result);
       };
+    }
+  };
+  const handleComent = async (e) => {
+    if (e.key === "Enter") {
+      setLoading(true);
+      if (image) {
+        const img = dataURItoBlob(image);
+        const path = `${user.username}/post_images/${postId}`;
+        const formData = new FormData();
+        formData.append("path", path);
+        formData.append("file", img);
+
+        const res = await uploadImages(formData, user.token);
+
+        const comments = await addComment(
+          postId,
+          comment,
+          res.images[0].url,
+          user.token
+        );
+
+        setComments(comments.post.comments);
+        setCount((prev) => ++prev);
+
+        if (res.status === "success") {
+          setError("");
+          setImage("");
+          setComment("");
+        } else {
+          setImage("");
+          setComment("");
+          setError(res);
+        }
+      } else {
+        const comments = await addComment(postId, comment, "", user.token);
+        setCount((prev) => ++prev);
+        setComments(comments.post.comments);
+        setImage("");
+        setComment("");
+      }
+      setLoading(false);
     }
   };
   return (
@@ -73,7 +119,11 @@ export default function CreateComment() {
             value={comment}
             placeholder="Write a comment..."
             onChange={(e) => setComment(e.target.value)}
+            onKeyUp={handleComent}
           />
+          <div className="comment_circle">
+            <ClipLoader size={20} color="#1876f2" loading={loading} />
+          </div>
           <div
             className="comment_circle_icon hover2"
             onClick={() => setPicker((prev) => !prev)}

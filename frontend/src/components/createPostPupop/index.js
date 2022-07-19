@@ -67,8 +67,6 @@ export default function CreatePostPupop({ user, setVisible }) {
       } else {
         setError(res);
       }
-    } else {
-      console.log("first");
     }
     setLoading(false);
   };

@@ -36,7 +36,6 @@ export default function Intro({ detailss, visitor }) {
     setInfos(detailss);
   }, [detailss]);
   const updateDetails = async () => {
-    console.log(infos);
     try {
       const { data } = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/updateDetails`,

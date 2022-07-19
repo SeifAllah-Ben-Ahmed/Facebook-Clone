@@ -1,8 +1,6 @@
 import React from "react";
 
 export default function OldCovers({ photos, setCoverPicture, user, setShow }) {
-  console.log(photos);
-
   return (
     <div className="blur">
       <div className="postBox selectCoverBox">
