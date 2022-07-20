@@ -16,8 +16,9 @@ import PplYouMayKnow from "./PplYouMayKnow";
 import ProfileMenu from "./ProfileMenu";
 import ProfilePicture from "./ProfilePicture";
 import "./style.css";
+import CreatePostPupop from "../../components/createPostPupop";
 
-export default function Profile({ setVisible }) {
+export default function Profile({ getAllPosts }) {
   const { user } = useSelector((state) => ({ ...state }));
   // Default username = loggedin user username
   const { username = user.username } = useParams();
@@ -85,7 +86,8 @@ export default function Profile({ setVisible }) {
 
   const leftSide = useRef(null);
   const [leftHeight, setLeftHeight] = useState(0);
-  const [scrollHeight, setScrollHeight] = useState(0);
+  const [visible, setVisible] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(false);
   const check = useMediaQuery({
     query: "(min-width:901px)",
   });
@@ -105,7 +107,16 @@ export default function Profile({ setVisible }) {
 
   return (
     <div className="profile">
-      <Header page="profile" />
+      {visible && (
+        <CreatePostPupop
+          posts={profile?.posts}
+          dispatch={dispatch}
+          user={user}
+          setVisible={setVisible}
+          profile
+        />
+      )}
+      <Header page="profile" getAllPosts={getAllPosts} />
       <div className="profile_top" ref={profileTop}>
         <div className="profile_container">
           <Cover

@@ -10,7 +10,13 @@ import { createPost } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import "./style.css";
 
-export default function CreatePostPupop({ user, setVisible }) {
+export default function CreatePostPupop({
+  profile,
+  user,
+  setVisible,
+  posts,
+  dispatch,
+}) {
   const postRef = useRef();
   useClickOutside(postRef, () => setVisible(false));
   const [show, setShow] = useState(false);
@@ -32,10 +38,15 @@ export default function CreatePostPupop({ user, setVisible }) {
         user.token
       );
 
-      if (res === "ok") {
+      if (res.status === "success") {
+        console.log([...posts, res.post]);
         setBackground("");
         setText("");
         setVisible(false);
+        dispatch({
+          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
+          payload: [...posts, res.post],
+        });
       } else {
         setError(res);
       }
@@ -50,6 +61,10 @@ export default function CreatePostPupop({ user, setVisible }) {
       const res = await uploadImages(formData, user.token);
       await createPost(null, null, text, res.images, user.id, user.token);
       if (res.status === "success") {
+        dispatch({
+          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
+          payload: [...posts, res.post],
+        });
         setImages([]);
         setText("");
         setShow(false);
@@ -60,7 +75,11 @@ export default function CreatePostPupop({ user, setVisible }) {
     } else if (text.length) {
       const res = await createPost(null, null, text, null, user.id, user.token);
 
-      if (res === "ok") {
+      if (res.status === "success") {
+        dispatch({
+          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
+          payload: [...posts, res.post],
+        });
         setBackground("");
         setText("");
         setVisible(false);

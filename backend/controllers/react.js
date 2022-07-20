@@ -8,16 +8,19 @@ exports.reactPost = catchAsync(async (req, res, next) => {
     postRef: postId,
     reactBy: mongoose.Types.ObjectId(req.user.id),
   });
+
   if (!check) {
     await React.create({
       react,
       reactBy: req.user.id,
       postRef: postId,
     });
-  } else if (check.react === react) {
-    await React.findByIdAndRemove(check._id);
   } else {
-    await React.findByIdAndUpdate(check._id, { react });
+    if (check.react === react) {
+      await React.findByIdAndRemove(check._id);
+    } else {
+      await React.findByIdAndUpdate(check._id, { react });
+    }
   }
   res.status(200).json({ status: 'success' });
 });

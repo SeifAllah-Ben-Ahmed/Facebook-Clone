@@ -12,7 +12,7 @@ export const createPost = async (
     if (!text && !images?.length) {
       return;
     }
-    await axios.post(
+    const { data } = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/createPost`,
       {
         postType: type,
@@ -27,7 +27,7 @@ export const createPost = async (
         },
       }
     );
-    return "ok";
+    return data;
   } catch (error) {
     return error.response.data.message;
   }

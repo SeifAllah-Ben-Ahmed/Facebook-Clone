@@ -1,8 +1,10 @@
 const Post = require('../models/post');
+const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
 
 exports.createPost = catchAsync(async (req, res, next) => {
   const post = await Post.create(req.body);
+  await post.populate('user', 'firstName lastName username picture cover');
   res.status(201).json({
     status: 'success',
     post,
@@ -10,9 +12,28 @@ exports.createPost = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllPosts = catchAsync(async (req, res, next) => {
-  const posts = await Post.find()
-    .populate('user', 'firstName lastName username picture gender')
-    .sort({ createdAt: -1 });
+  const followings = await User.findById(req.user.id).select('following');
+  const { following } = followings;
+  const followingsPosts = (
+    await Promise.all(
+      following.map((user) =>
+        Post.find({ user })
+          .populate('user', 'firstName lastName username picture')
+          .populate('comments.commentBy', 'firstName lastName username picture')
+          .sort({ createdAt: -1 })
+          .limit(10)
+      )
+    )
+  ).flat();
+  const userPost = await Post.find({ user: req.user.id })
+    .populate('user', 'firstName lastName username picture cover')
+    .populate('comments.commentBy', 'firstName lastName username picture')
+    .sort({ createdAt: -1 })
+    .limit(10);
+
+  const posts = [...followingsPosts, ...userPost].sort(
+    (a, b) => b.createdAt - a.createdAt
+  );
   res.status(200).json({
     status: 'success',
     posts,

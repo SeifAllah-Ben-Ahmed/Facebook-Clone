@@ -51,9 +51,17 @@ function App() {
     getAllPosts();
   }, []);
 
+  console.log("Home", posts);
   return (
     <>
-      {visible && <CreatePostPupop user={user} setVisible={setVisible} />}
+      {visible && (
+        <CreatePostPupop
+          posts={posts}
+          dispatch={dispatch}
+          user={user}
+          setVisible={setVisible}
+        />
+      )}
       <Routes>
         <Route element={<NotLoggedinRoutes />}>
           <Route path="/login" element={<Login />} />
@@ -61,12 +69,21 @@ function App() {
         <Route element={<LoggedinRoutes />}>
           <Route
             path="/"
-            element={<Home setVisible={setVisible} posts={posts} />}
+            element={
+              <Home
+                setVisible={setVisible}
+                posts={posts}
+                loading={loading}
+                getAllPosts={getAllPosts}
+              />
+            }
           />
           <Route path="/activate/:token" element={<Activate />} />
           <Route
             path="/profile"
-            element={<Profile setVisible={setVisible} />}
+            element={
+              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
           />
           <Route
             path="/profile/:username"
