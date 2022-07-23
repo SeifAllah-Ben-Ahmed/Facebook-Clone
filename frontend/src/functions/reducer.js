@@ -42,7 +42,7 @@ export function profileReducer(state, { type, payload }) {
     case "PROFILE_POSTS":
       return {
         loading: false,
-        profile: { ...state, posts: payload },
+        profile: { ...state.profile, posts: payload },
         error: "",
       };
     case "PROFILE_ERROR":
