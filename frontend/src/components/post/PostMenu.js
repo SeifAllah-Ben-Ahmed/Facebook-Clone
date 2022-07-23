@@ -1,25 +1,57 @@
 import { useRef } from "react";
+import { saveAs } from "file-saver";
 import MenuItem from "./MenuItem";
 import useClickOutside from "../../helpers/clickOutside";
+import { deletePost, saveHandler } from "../../functions/post";
 export default function PostMenu({
   userId,
   postUserId,
   imagesLength,
   setShowMenu,
-  showMenu,
+  postId,
+  token,
+  checkSaved,
+  setCheckSaved,
+  images,
+  postRef,
 }) {
   const test = userId === postUserId;
   const menu = useRef(null);
   useClickOutside(menu, () => setShowMenu(false));
+  const savePostHandler = async () => {
+    saveHandler(postId, token);
+    setCheckSaved((prev) => !prev);
+  };
+  const downloadImages = () => {
+    images.map((image) => saveAs(image.url, "image.jpg"));
+  };
+  const deleteHandler = async () => {
+    const { status } = await deletePost(postId, token);
+
+    if (status === "success") {
+      // postRef.current.style.display = "none";
+      postRef.current.remove();
+    }
+  };
 
   return (
     <ul className="post_menu" ref={menu}>
       {test && <MenuItem icon="pin_icon" title="Pin Post" />}
-      <MenuItem
-        icon="save_icon"
-        title="Save Post"
-        subtitle="Add this to your saved items."
-      />
+      <div onClick={() => savePostHandler()}>
+        {checkSaved ? (
+          <MenuItem
+            icon="save_icon"
+            title="Unsave Post"
+            subtitle="Remove this from your saved items."
+          />
+        ) : (
+          <MenuItem
+            icon="save_icon"
+            title="Save Post"
+            subtitle="Add this to your saved items."
+          />
+        )}
+      </div>
       <div className="line"></div>
       {test && <MenuItem icon="edit_icon" title="Edit Post" />}
       {!test && (
@@ -28,7 +60,11 @@ export default function PostMenu({
           title="Turn on notifications for this post"
         />
       )}
-      {imagesLength && <MenuItem icon="download_icon" title="Download" />}
+      {imagesLength && (
+        <div onClick={downloadImages}>
+          <MenuItem icon="download_icon" title="Download" />
+        </div>
+      )}
       {imagesLength && (
         <MenuItem icon="fullscreen_icon" title="Enter Fullscreen" />
       )}
@@ -46,11 +82,13 @@ export default function PostMenu({
       )}
       {test && <MenuItem icon="archive_icon" title="Move to archive" />}
       {test && (
-        <MenuItem
-          icon="trash_icon"
-          title="Move to trash"
-          subtitle="items in your trash are deleted after 30 days"
-        />
+        <div onClick={() => deleteHandler()}>
+          <MenuItem
+            icon="trash_icon"
+            title="Move to trash"
+            subtitle="items in your trash are deleted after 30 days"
+          />
+        </div>
       )}
       {!test && <div className="line"></div>}
       {!test && (

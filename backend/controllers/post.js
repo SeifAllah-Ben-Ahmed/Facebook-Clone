@@ -16,20 +16,24 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
   const { following } = followings;
   const followingsPosts = (
     await Promise.all(
-      following.map((user) =>
-        Post.find({ user })
-          .populate('user', 'firstName lastName username picture')
-          .populate('comments.commentBy', 'firstName lastName username picture')
-          .sort({ createdAt: -1 })
-          .limit(10)
+      following.map(
+        (user) =>
+          Post.find({ user })
+            .populate('user', 'firstName lastName username picture')
+            .populate(
+              'comments.commentBy',
+              'firstName lastName username picture'
+            )
+            .sort({ createdAt: -1 })
+        // .limit(10)
       )
     )
   ).flat();
   const userPost = await Post.find({ user: req.user.id })
     .populate('user', 'firstName lastName username picture cover')
     .populate('comments.commentBy', 'firstName lastName username picture')
-    .sort({ createdAt: -1 })
-    .limit(10);
+    .sort({ createdAt: -1 });
+  // .limit(10);
 
   const posts = [...followingsPosts, ...userPost].sort(
     (a, b) => b.createdAt - a.createdAt
@@ -57,5 +61,39 @@ exports.comment = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     post,
+  });
+});
+
+exports.savePost = catchAsync(async (req, res, next) => {
+  const postId = req.params.id;
+  const { id } = req.user;
+
+  const user = await User.findById(id);
+  const check = user?.savedPosts?.find(
+    (post) => post.post.toString() === postId
+  );
+
+  if (check) {
+    await User.findByIdAndUpdate(id, {
+      $pull: { savedPosts: { post: postId } },
+    });
+  } else {
+    await User.findByIdAndUpdate(id, {
+      $push: { savedPosts: { post: postId, savedAt: new Date() } },
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+exports.deletePost = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  await Post.findByIdAndRemove(id);
+
+  res.status(200).json({
+    status: 'success',
   });
 });

@@ -30,6 +30,7 @@ export default function Profile({ getAllPosts }) {
     loading: false,
     error: "",
   });
+
   const dataBody = {
     path: `${username}/*`,
     max: 30,

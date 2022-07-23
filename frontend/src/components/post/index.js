@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Moment from "react-moment";
 import { Dots, Public } from "../../svg";
 import ReactPopup from "./ReactPopup";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReact, reactPost } from "../../functions/post";
@@ -16,6 +16,7 @@ export default function Post({ post, user, profile }) {
   const [reacts, setReacts] = useState([]);
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
+  const [checkSaved, setCheckSaved] = useState(false);
 
   const [comments, setComments] = useState([]);
 
@@ -25,10 +26,14 @@ export default function Post({ post, user, profile }) {
   }, [post]);
 
   const getPostReact = async () => {
-    const { reacts, check, total } = await getReact(post?._id, user.token);
+    const { reacts, check, total, checkSaved } = await getReact(
+      post?._id,
+      user.token
+    );
     setTotal(total);
     setReacts(reacts);
     setCheck(check);
+    setCheckSaved(checkSaved);
   };
   const reactHandler = async (type) => {
     await reactPost(post._id, type, user.token);
@@ -58,8 +63,13 @@ export default function Post({ post, user, profile }) {
   const showMore = () => {
     setCount((prev) => prev + 3);
   };
+  const postRef = useRef(null);
   return (
-    <div className="post" style={{ width: `${profile && "100%"}` }}>
+    <div
+      ref={postRef}
+      className="post"
+      style={{ width: `${profile && "100%"}` }}
+    >
       <div className="post_header">
         <Link
           to={`/profile/${post?.user?.username}`}
@@ -152,7 +162,7 @@ export default function Post({ post, user, profile }) {
         <div className="reacts_count">
           <div className="reacts_count_imgs">
             {reacts
-              .sort((a, b) => b.count - a.count)
+              ?.sort((a, b) => b.count - a.count)
               ?.slice(0, 3)
               .map(
                 (react) =>
@@ -260,6 +270,12 @@ export default function Post({ post, user, profile }) {
           userId={user.id}
           postUserId={post.user._id}
           setShowMenu={setShowMenu}
+          postId={post._id}
+          token={user.token}
+          checkSaved={checkSaved}
+          setCheckSaved={setCheckSaved}
+          images={post.images}
+          postRef={postRef}
         />
       )}
     </div>

@@ -39,7 +39,6 @@ export default function CreatePostPupop({
       );
 
       if (res.status === "success") {
-        console.log([...posts, res.post]);
         setBackground("");
         setText("");
         setVisible(false);

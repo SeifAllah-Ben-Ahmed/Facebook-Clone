@@ -51,7 +51,6 @@ function App() {
     getAllPosts();
   }, []);
 
-  console.log("Home", posts);
   return (
     <>
       {visible && (
