@@ -431,3 +431,63 @@ exports.deleteRequest = catchAsync(async (req, res, next) => {
     message: 'Cancel request successfully',
   });
 });
+
+exports.search = catchAsync(async (req, res, next) => {
+  const { search } = req.params;
+  const result = await User.find({ $text: { $search: search } }).select(
+    'firstName lastName username picture'
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Cancel request successfully',
+    result,
+  });
+});
+
+exports.addToSearch = catchAsync(async (req, res, next) => {
+  const { searchId } = req.body;
+  const user = await User.findById(req.user.id);
+  const check = user.search.find((x) => x.user.toString() === searchId);
+
+  if (check) {
+    await User.updateOne(
+      { _id: req.user.id, 'search._id': check._id },
+      { $set: { 'search.$.createdAt': new Date() } }
+    );
+  } else {
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { search: { user: searchId, createdAt: new Date() } },
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+exports.getSearch = catchAsync(async (req, res, next) => {
+  const results = await User.findById(req.user.id)
+    .select('search')
+    .populate('search.user', 'firstName lastName username picture');
+
+  res.status(200).json({
+    status: 'success',
+    results: results.search,
+  });
+});
+
+exports.removeFromSearch = catchAsync(async (req, res, next) => {
+  const { searchUser } = req.body;
+
+  const results = await User.updateOne(
+    { _id: req.user.id },
+    {
+      $pull: { search: { user: searchUser } },
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    results: results.search,
+  });
+});

@@ -27,5 +27,9 @@ router.put('/unfollow/:id', authUser, userControllers.unfollow);
 router.put('/acceptRequest/:id', authUser, userControllers.acceptRequest);
 router.put('/unfriend/:id', authUser, userControllers.unfriend);
 router.put('/deleteRequest/:id', authUser, userControllers.deleteRequest);
+router.post('/search/:search', authUser, userControllers.search);
+router.put('/addToSearch', authUser, userControllers.addToSearch);
+router.get('/getSearch', authUser, userControllers.getSearch);
+router.put('/removeFromSearch', authUser, userControllers.removeFromSearch);
 
 module.exports = router;
