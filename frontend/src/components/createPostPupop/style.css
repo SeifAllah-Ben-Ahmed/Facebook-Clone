@@ -9,6 +9,7 @@
   min-height: 220px;
   width: 500px;
   border-radius: 5px;
+  color: var(--color-primary);
 }
 .box_header {
   position: relative;
@@ -77,7 +78,7 @@
   font-family: inherit;
   font-size: 24px;
   background-color: var(--bg-primary);
-  color: var(--color-primary);
+  color: #000;
 }
 .flex_center textarea {
   min-height: 90px;
@@ -169,6 +170,7 @@
   padding: 10px;
   border: 1px solid var(--bg-third);
   border-radius: 10px;
+  color: var(--color-primary);
 }
 .add_pics_inside1 {
   position: relative;

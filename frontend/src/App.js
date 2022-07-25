@@ -15,7 +15,7 @@ import NotLoggedinRoutes from "./routes/NotLoggedinRoutes";
 
 function App() {
   const [visible, setVisible] = useState(false);
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user, darkTheme } = useSelector((state) => ({ ...state }));
 
   const [{ posts, loading, error }, dispatch] = useReducer(postsReducer, {
     posts: [],
@@ -51,9 +51,8 @@ function App() {
   useEffect(() => {
     getAllPosts();
   }, []);
-
   return (
-    <>
+    <div className={`${darkTheme ? "dark" : ""}`}>
       {visible && (
         <CreatePostPupop
           posts={posts}
@@ -104,7 +103,7 @@ function App() {
         </Route>
         <Route path="/reset" element={<Reset />} />
       </Routes>
-    </>
+    </div>
   );
 }
 

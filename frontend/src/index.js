@@ -10,6 +10,7 @@ import rootReducer from "./reducers";
 
 import "./index.css";
 import "./styles/icons/icons.css";
+import "./styles/dark.css";
 
 const store = createStore(rootReducer, composeWithDevTools());
 ReactDOM.render(

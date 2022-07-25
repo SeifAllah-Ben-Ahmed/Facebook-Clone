@@ -87,7 +87,7 @@ export default function Profile({ getAllPosts }) {
 
   const leftSide = useRef(null);
   const [leftHeight, setLeftHeight] = useState(0);
-  const [visible, setVisible] = useState(0);
+  const [visible, setVisible] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(false);
   const check = useMediaQuery({
     query: "(min-width:901px)",
