@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { HashLoader } from "react-spinners";
 import CreatePost from "../../components/createPost";
 import Header from "../../components/header";
 import LeftHome from "../../components/home/left";
@@ -9,13 +10,13 @@ import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import "./style.css";
 
-export default function Home({ setVisible, posts, getAllPosts }) {
+export default function Home({ setVisible, posts, getAllPosts, loading }) {
   const { user } = useSelector((store) => ({ ...store }));
   const middle = useRef(null);
   const [height, setHeight] = useState(0);
   useEffect(() => {
     setHeight(middle.current.clientHeight);
-  }, [posts]);
+  }, [loading, height]);
 
   return (
     <div className="home" style={{ height: `${height + 150}px` }}>
@@ -25,11 +26,17 @@ export default function Home({ setVisible, posts, getAllPosts }) {
         <Stories />
         {!user.verified && <SendVerification user={user} />}
         <CreatePost user={user} setVisible={setVisible} />
-        <div className="posts">
-          {posts?.map((post) => (
-            <Post key={post._id} post={post} user={user} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="sekelton_loader">
+            <HashLoader color="#1876f2" />
+          </div>
+        ) : (
+          <div className="posts">
+            {posts?.map((post) => (
+              <Post key={post._id} post={post} user={user} />
+            ))}
+          </div>
+        )}
       </div>
       <RightHome />
     </div>
