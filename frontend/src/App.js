@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import CreatePostPupop from "./components/createPostPupop";
 import { postsReducer } from "./functions/reducer";
+import Friends from "./pages/friends";
 import Home from "./pages/home";
 import Activate from "./pages/home/Avtivate";
 import Login from "./pages/login";
@@ -82,6 +83,18 @@ function App() {
             path="/profile"
             element={
               <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+          />
+          <Route
+            path="/friends"
+            element={
+              <Friends setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+          />
+          <Route
+            path="/friends/:type"
+            element={
+              <Friends setVisible={setVisible} getAllPosts={getAllPosts} />
             }
           />
           <Route

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const mongoose = require('mongoose');
 const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
 const validation = require('../utils/validation');
@@ -489,5 +490,23 @@ exports.removeFromSearch = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     results: results.search,
+  });
+});
+exports.getFriendsPageInfos = catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const user = await User.findById(id)
+    .select('friends requests')
+    .populate('friends', 'firstName lastName username picture')
+    .populate('requests', 'firstName lastName username picture');
+
+  const sentRequests = await User.find({
+    requests: mongoose.Types.ObjectId(id),
+  }).select('firstName lastName username picture');
+
+  res.status(200).json({
+    status: 'success',
+    friends: user.friends,
+    requests: user.requests,
+    sentRequests,
   });
 });

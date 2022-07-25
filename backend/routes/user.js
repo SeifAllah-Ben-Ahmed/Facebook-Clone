@@ -31,5 +31,10 @@ router.post('/search/:search', authUser, userControllers.search);
 router.put('/addToSearch', authUser, userControllers.addToSearch);
 router.get('/getSearch', authUser, userControllers.getSearch);
 router.put('/removeFromSearch', authUser, userControllers.removeFromSearch);
+router.get(
+  '/getFriendsPageInfos',
+  authUser,
+  userControllers.getFriendsPageInfos
+);
 
 module.exports = router;
